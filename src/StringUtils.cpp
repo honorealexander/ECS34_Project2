@@ -5,16 +5,7 @@
 namespace StringUtils{
 
 std::string Slice(const std::string &str, ssize_t start, ssize_t end) noexcept{
-    if(end >= str.length()){
-        end = str.length()-1;
-    }
-    if(start < 0 || end < 0){
-        return "";
-    }
 
-    ssize_t len = end - start + 1;
-
-    return str.substr(start, len);
 }
 
 std::string Capitalize(const std::string &str) noexcept{
@@ -175,8 +166,8 @@ std::string ExpandTabs(const std::string &str, int tabsize) noexcept{
     std::string Copy;
 
     for(char ch : str){
-        if(ch = "\t"){
-            int spaces = tabsize - (res.length() % tabsize);
+        if(ch == '\t'){ 
+            int spaces = tabsize - (Copy.length() % tabsize); 
             Copy.append(spaces, ' ');
         } else {
             Copy.push_back(ch);
@@ -184,6 +175,7 @@ std::string ExpandTabs(const std::string &str, int tabsize) noexcept{
     }
     return Copy;
 }
+
 
 int EditDistance(const std::string &left, const std::string &right, bool ignorecase) noexcept{
     std::string Left = left;
