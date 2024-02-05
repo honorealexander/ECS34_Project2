@@ -6,16 +6,8 @@ struct CDSVWriter::SImplementation {
     char delimeter;
     bool quoteall;
 
-<<<<<<< HEAD
     SImplementation(std::shared_ptr<CDataSink> sink, char delimeter, bool quoteall)
         : sink(sink), delimeter(delimeter), quoteall(quoteall) {}
-=======
-//case for special characters
-bool CDSVWriter::SpecialChar(const std::string &value) {
-    return (value.find(DImplementation ->delimeter) !=std::string::npos ||
-            value.find('"') != std::string::npos || value.find('\n') !- std::string::npos)
-}
->>>>>>> d01271a9895fe6ce9df2a8a97b31adc2aaf556cf
 
     ~SImplementation() { //do clean up if needed
     }

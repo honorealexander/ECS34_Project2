@@ -2,16 +2,16 @@
 #include <expat.h>
 #include <queue>
 
-
 struct CXMLReader::SImplementation{
     std::shared_ptr< CDataSource > DDataSource;
     XML_Parser DXMLParser;
     std::queue<SXMLEntity> DEntityQueue;
+    std::vector<char> DataBuffer;
 
     void StartElementHandler(const std::string &name, const std::vector<std::string> &attrs){
         SXMLEntity TempEntity;
         TempEntity.DNameData = name;
-        TestEntity.DType = SXMLEntity::EType::StartElement;
+        TempEntity.DType = SXMLEntity::EType::StartElement;
         for(size_t i = 0; i < attrs.size(); i += 2){
             TempEntity.SetAttribute(attrs[i], attrs[i+1]);
         }
@@ -19,7 +19,7 @@ struct CXMLReader::SImplementation{
     }
 
     void EndElementHandler(const std::string &name){
-
+        
     }
     
     void CharacterDataHandler(const std::string &data){
@@ -57,12 +57,12 @@ struct CXMLReader::SImplementation{
         DXMLParser = XML_ParserCreate(NULL);
         XML_SetStartElementHandler(DXMLParser, StartElementHandlerCallback);
         XML_SetEndElementHandler(DXMLParser, EndElementHandlerCallback);
-        XML_SetCharacterDataHandlerCallback(DXMLParser, CharacterDataHandlerCallback);
+        XML_SetCharacterDataHandler(DXMLParser, CharacterDataHandlerCallback);
         XML_SetUserData(DXMLParser, this);
     };
 
     bool End() const{
-
+        return true;
     };
 
     bool ReadEntity(SXMLEntity &entity, bool skipcdata){
@@ -71,7 +71,7 @@ struct CXMLReader::SImplementation{
         // return entity
         while(DEntityQueue.empty()){
             if(DDataSource->Read(DataBuffer, 256)){
-                XML_Parse(DXMLParser, DataBuffer.data(), DataBuffer.size(), DataBuffer.size() < 256)
+                XML_Parse(DXMLParser, DataBuffer.data(), DataBuffer.size(), DataBuffer.size() < 256);
             } else {
                 XML_Parse(DXMLParser, DataBuffer.data(), 0, true);
             }
@@ -90,7 +90,6 @@ CXMLReader::CXMLReader(std::shared_ptr<CDataSource> src) {
 }
 
 CXMLReader::~CXMLReader() {
-
 }
 
 bool CXMLReader::End() const {
