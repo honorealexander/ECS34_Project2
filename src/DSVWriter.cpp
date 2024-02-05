@@ -4,7 +4,7 @@
 
 
 //case for special characters
-bool CDSWriter::SpecialChar(const std::string &value) {
+bool CDSVWriter::SpecialChar(const std::string &value) {
     return (value.find(DImplementation ->delimeter) !=std::string::npos ||
             value.find('"') != std::string::npos || value.find('\n') !- std::string::npos)
 }
