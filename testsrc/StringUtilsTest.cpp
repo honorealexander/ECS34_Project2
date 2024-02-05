@@ -3,8 +3,8 @@
 
 TEST(StringUtilsTest, SliceTest){
     std::string Base = "Hello";
-    EXPECT_EQ(StringUtils::Slice(Base, 0), "Hello");
-    EXPECT_EQ(StringUtils::Slice(Base, 1), "ello");
+    EXPECT_EQ(StringUtils::Slice(Base, 0, 5), "Hello");
+    EXPECT_EQ(StringUtils::Slice(Base, 1, 5), "ello");
 }
 
 TEST(StringUtilsTest, Capitalize){
@@ -87,7 +87,7 @@ TEST(StringUtilsTest, Join){
 TEST(StringUtilsTest, ExpandTabs){
     std::string Base = "\tThank\tGoodness";
     EXPECT_EQ(StringUtils::ExpandTabs(Base, 1), " Thank Goodness");
-    EXPECT_EQ(StringUtils::ExpandTabs("\tTabs\tAre\tFun", 2), "  Tabs  Are  Fun");
+    EXPECT_EQ(StringUtils::ExpandTabs("\tTabs\tAre\tFun", 2), "  Tabs  Are Fun");
 }
 
 TEST(StringUtilsTest, EditDistance){

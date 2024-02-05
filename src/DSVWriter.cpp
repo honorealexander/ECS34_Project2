@@ -23,6 +23,13 @@ bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
 
     bool firstColumn = true; // Flag to track the first column in the row
 
+    bool isFirstRow = true; // Flag to track if it's the first row
+    if (!isFirstRow) {
+        DImplementation->sink->Put('\n'); // Prepend newline if not the first row
+    } else {
+        isFirstRow = false; // Update flag for subsequent rows
+    }
+
     for (const std::string& cell : row) {
         if (!firstColumn) {
             if (DImplementation->delimeter == '"') {
@@ -56,9 +63,6 @@ bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
 
         firstColumn = false; // Update flag for subsequent columns
     }
-
-    // Write newline at the end of the row
-    DImplementation->sink->Put('\n');
 
     return true;
 }
