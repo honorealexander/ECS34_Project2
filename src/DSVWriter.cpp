@@ -1,47 +1,66 @@
-#include <gtest/gtest.h>
-#include <sstream>
 #include "DSVWriter.h"
+#include <sstream>
 
+struct CDSVWriter::SImplementation {
+    std::shared_ptr<CDataSink> sink;
+    char delimeter;
+    bool quoteall;
 
-//case for special characters
-bool CDSWriter::SpecialChar(const std::string &value) {
-    return (value.find(DImplementation ->delimeter) !=std::string::npos ||
-            value.find('"') != std::string::npos || value.find('\n') !- std::string::npos)
-}
+    SImplementation(std::shared_ptr<CDataSink> sink, char delimeter, bool quoteall)
+        : sink(sink), delimeter(delimeter), quoteall(quoteall) {}
 
-
-//quotes string. ensures proper handling of special character data that might otherwise be misinterpreted.
-std::string CDSVWriter::QuoteString(const std::string &value) {
-    std::string quoteVal = "\"";
-    for(char ch : value){
-        if (ch=='"'){
-            quoteVal+="\"\"";//put two double quotes in place of one double quote
-        }else{
-            quoteVal+=ch;
-        }
+    ~SImplementation() { //do clean up if needed
     }
-    quoteVal += "\"";
-    return quoteVal;
-}
+};
 
-bool CDSVWriter WriteRow(const std::vector<std::string> &row){
-    std::ostringstream rowStream;
-    for(size_t i=0; i<row.size(); ++i){
-        if(i>0){    
-            rowStream << DImplementation ->delimiter;
+CDSVWriter::CDSVWriter(std::shared_ptr<CDataSink> sink, char delimeter, bool quoteall)
+    : DImplementation(std::make_unique<SImplementation>(sink, delimeter, quoteall)) {}
+
+CDSVWriter::~CDSVWriter() = default;
+
+bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
+    if (!DImplementation->sink) return false; // Check if sink is valid
+
+    bool firstColumn = true; // Flag to track the first column in the row
+
+    for (const std::string& cell : row) {
+        if (!firstColumn) {
+            if (DImplementation->delimeter == '"') {
+                // If delimeter is a double quote, interpret it as a comma
+                DImplementation->sink->Put(',');
+            } else {
+                DImplementation->sink->Put(DImplementation->delimeter);
+            }
         }
-        if (DImplementation ->quoteall || SpecialChar(row[i])) {
-            rowStream << QuoteString(row[i]);
-        }else{
-            rowStream <<row[i];
+
+        if (DImplementation->quoteall ||
+            cell.find(DImplementation->delimeter) != std::string::npos ||
+            cell.find('"') != std::string::npos ||
+            cell.find('\n') != std::string::npos) {
+            // Quote the value if it contains the delimeter, double quote, or newline
+            DImplementation->sink->Put('"');
+
+            // Replace double quote characters with two double quotes
+            for (char c : cell) {
+                if (c == '"') DImplementation->sink->Put('"');
+                DImplementation->sink->Put(c);
+            }
+
+            DImplementation->sink->Put('"');
+        } else {
+            // No need to quote, directly output the value
+            for (char c : cell) {
+                DImplementation->sink->Put(c);
+            }
         }
+
+        firstColumn = false; // Update flag for subsequent columns
     }
-    rowStream << '\n';
 
-    std::string rowString = rowStream.str();
+    // Write newline at the end of the row
+    DImplementation->sink->Put('\n');
 
-//convert the row string into a vector full of characters
-    std::vector<char> rowBuffer(rowString.begin(), rowString.end())
-
-    return DImplementation->sink->Write(rowBuffer);
+    return true;
 }
+
+
