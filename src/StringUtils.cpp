@@ -5,7 +5,14 @@
 namespace StringUtils{
 
 std::string Slice(const std::string &str, ssize_t start, ssize_t end) noexcept{
-
+    //check bounds of start and end variables
+    //return str.substr(start,str.length()-start);
+    if (start >= 0 && static_cast<std::size_t>(start) < str.length() &&
+        end >= 0 && static_cast<std::size_t>(end) <= str.length()) {
+        //return the string minus the part specified between start and end
+        return str.substr(start, end - start);
+    }
+    return "";
 }
 
 std::string Capitalize(const std::string &str) noexcept{
