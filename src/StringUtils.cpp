@@ -5,7 +5,7 @@
 namespace StringUtils{
 
 std::string Slice(const std::string &str, ssize_t start, ssize_t end) noexcept{
-
+    return "";
 }
 
 std::string Capitalize(const std::string &str) noexcept{

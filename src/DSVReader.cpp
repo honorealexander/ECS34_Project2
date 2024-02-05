@@ -1,5 +1,6 @@
 #include "DSVReader.h"
 #include <sstream>
+#include <gtest/gtest.h>
 
 struct CDSVReader::SImplementation {
     std::shared_ptr<CDataSource> DataSource;
