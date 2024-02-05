@@ -5,7 +5,6 @@
 namespace StringUtils{
 
 std::string Slice(const std::string &str, ssize_t start, ssize_t end) noexcept{
-<<<<<<< HEAD
     //check bounds of start and end variables
     //return str.substr(start,str.length()-start);
     if (start >= 0 && static_cast<std::size_t>(start) < str.length() &&
@@ -13,8 +12,6 @@ std::string Slice(const std::string &str, ssize_t start, ssize_t end) noexcept{
         //return the string minus the part specified between start and end
         return str.substr(start, end - start);
     }
-=======
->>>>>>> fdbb55744335e18543354ce3f9ebd16516ff50ea
     return "";
 }
 
