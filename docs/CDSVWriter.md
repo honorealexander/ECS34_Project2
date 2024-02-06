@@ -1,22 +1,30 @@
-# CDSVWriter Functions
+# CDSVWriter
 
-## SpecialCharacter function
+## SImplementation Stucture
 
-Parameters: 'const std::string &value' 
-This is the input string
+### Consutructor
 
-This function takes an input string and checks for any special characters, and returns a boolean True or False value depending on whether or not any are present.
+SImplementation(std::shared_ptr<CDataSink> sink, char delimiter, bool quoteall);
 
-## QuoteString Function
+This initializes the structure with a data sink, a flag, and a delimiter. It takes 3 parameters: sink, delimiter, and quoteall, and initializes them with the provided values.
 
-Parameters: 'const std::string &value'
-This is the input string to quote
+### Destructor
 
-This function quotes the input string and replaces any double quote characters with two double quote characters. This makes it so that any confusion from special characters in the DSV writing is avoided.
+~SImplementation();
 
-## WriteRow Function
+This is a destruct with default setting.
+
+### WriteRow
+
+bool WriteRow(const std::vector<std::string>& row);
 
 Parameters: 'const std::vector<std::string> &row'
 This is the vector of strings that represents a row to be written
 
-This function writes a row on the DSV using the provided vector of strings. It considers the delimter and quote rules to format. This function facilitates the writing of the rows.
+It checks if the sink is valid or not and returns a boolean value accordingly. It iterates through each cell in the row and takes care of any special delimiters, quoting instances, and newlines.
+
+The WriteRow method also initializes flags like firstColum and isFirstRow which helps manage the format of the output.
+
+With the delimitiers, if it is not the first column, it ouputs the delimiter based on the specified character, unless it is a double quote. 
+
+If it is a quote, we enclose the value in double quotes.

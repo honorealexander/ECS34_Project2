@@ -23,7 +23,7 @@ bool CDSVReader::End() const {
 }
 
 bool CDSVReader::ReadRow(std::vector<std::string>& row) {
-    row.clear();  //make sure row is empty before you add a new vector
+    row.clear(); //makes sure row is clear before trying to put more data into it for the next row
 
     char ch;
     std::string column;

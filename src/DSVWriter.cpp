@@ -9,7 +9,7 @@ struct CDSVWriter::SImplementation {
     SImplementation(std::shared_ptr<CDataSink> sink, char delimeter, bool quoteall)
         : sink(sink), delimeter(delimeter), quoteall(quoteall) {}
 
-    ~SImplementation() { //do clean up if needed
+    ~SImplementation() { 
     }
 };
 
@@ -20,40 +20,39 @@ CDSVWriter::~CDSVWriter() = default;
 
 bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
     if (!DImplementation->sink) {
-        return false; // Check if sink is valid
+        return false;
     } 
 
-    static bool isFirstRow = true; // Flag to track if it's the first row
+    static bool isFirstRow = true; //help from Chat, use static to make sure that it's not being changed everytime function is called
     if (!isFirstRow) {
-        DImplementation->sink->Put('\n'); // Prepend newline if not the first row
+        DImplementation->sink->Put('\n'); 
     } else {
-        isFirstRow = false; // Update flag for subsequent rows
+        isFirstRow = false; 
     }
 
-    bool firstColumn = true; // Flag to track the first column in the row
+    bool firstColumn = true;
 
     for (const std::string& cell : row) {
         if (!firstColumn) {
-            if (DImplementation->delimeter == '"') {
-                // If delimiter is a double quote, interpret it as a comma
-                DImplementation->sink->Put(',');
+            if (DImplementation->delimeter == '"') { //checking to see if delimeter is " the delimeter interpret it as a comma according to guidelines
+                DImplementation->sink->Put(','); 
             } else {
                 DImplementation->sink->Put(DImplementation->delimeter);
             }
         }
 
-        if (DImplementation->quoteall ||
-            cell.find(DImplementation->delimeter) != std::string::npos ||
-            cell.find('"') != std::string::npos ||
-            cell.find('\n') != std::string::npos) {
-            // Quote the value if it contains the delimiter, double quote, or newline
+        if (cell.find(DImplementation->delimeter) != std::string::npos || // check that we are still looking for things to be put in double quotes
+            cell.find('"') != std::string::npos || //these are all according to the guidelines on Project2 doc
+            cell.find('\n') != std::string::npos ||
+            DImplementation->quoteall) {
             DImplementation->sink->Put('"');
 
             // Replace double quote characters with two double quotes
+            // got this section from ChatGPT (Changes 4 in ReadME)
             for (char c : cell) {
                 if (c == '"') {
                     DImplementation->sink->Put('"');
-                    DImplementation->sink->Put('"'); // Replace with two double quotes
+                    DImplementation->sink->Put('"'); 
                 } else {
                     DImplementation->sink->Put(c);
                 }
@@ -61,13 +60,12 @@ bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
 
             DImplementation->sink->Put('"');
         } else {
-            // No need to quote, directly output the value
             for (char c : cell) {
                 DImplementation->sink->Put(c);
             }
         }
 
-        firstColumn = false; // Update flag for subsequent columns
+        firstColumn = false;
     }
 
     return true;

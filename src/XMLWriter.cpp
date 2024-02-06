@@ -17,7 +17,7 @@ struct CXMLWriter::SImplementation {
     }
 
     bool Flush() {
-        if (XML_Parse(parser, nullptr, 0, true)) {
+        if (XML_Parse(parser, nullptr, 0, true)) { //line generated from Chat, noted in ReadME Changes 9
             return true;
         } else {
             return false;
@@ -25,18 +25,18 @@ struct CXMLWriter::SImplementation {
     }
 
     bool WriteEntity(const SXMLEntity& entity) {
-        std::string startTag = "<" + entity.DNameData + ">";
+        std::string startTag = "<" + entity.DNameData + ">"; //constructing tags for XML entities
         std::string endTag = "</" + entity.DNameData + ">";
         std::string cdata = entity.DNameData;
 
-        switch (entity.DType) {
+        switch (entity.DType) { //skeleton from Chat, Changes 10 cited in ReadME
             case SXMLEntity::EType::StartElement:
-                if (!sink->Write(std::vector<char>(startTag.begin(), startTag.end()))) {
+                if (!sink->Write(std::vector<char>(startTag.begin(), startTag.end()))) { //writes start tag to sink
                     return false;
                 }
                 break;
             case SXMLEntity::EType::EndElement:
-                if (!sink->Write(std::vector<char>(endTag.begin(), endTag.end()))) {
+                if (!sink->Write(std::vector<char>(endTag.begin(), endTag.end()))) { //writes element tag to sink
                     return false;
                 }
                 break;
@@ -49,7 +49,7 @@ struct CXMLWriter::SImplementation {
                 break;
         }
 
-        return true;
+        return true; //default answer is true, false only returned if there is a writing failure
     }
 
 };

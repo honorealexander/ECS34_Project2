@@ -60,7 +60,7 @@ struct CXMLReader::SImplementation{
 
     };
 
-    SImplementation(std::shared_ptr< CDataSource > src){
+    SImplementation(std::shared_ptr< CDataSource > src){ //code from discussion
         DDataSource = src;
         DXMLParser = XML_ParserCreate(NULL);
         XML_SetStartElementHandler(DXMLParser, StartElementHandlerCallback);
@@ -74,9 +74,6 @@ struct CXMLReader::SImplementation{
     };
 
     bool ReadEntity(SXMLEntity &entity, bool skipcdata){
-        // Reader from source if necessary
-        // Pass to XML_parse function
-        // return entity
         while(DEntityQueue.empty()){
             if(DDataSource->Read(DataBuffer, 256)){
                 XML_Parse(DXMLParser, DataBuffer.data(), DataBuffer.size(), DataBuffer.size() < 256);
