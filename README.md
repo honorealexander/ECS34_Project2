@@ -409,3 +409,93 @@ In this example, I've added a case for SXMLEntity::EType::CompleteElement and pr
 
 ### Changes 10
 Used this response as an outline for my code in my XMLWriter.cpp. My error ended up going away for the CompleteElement so I deleted that part.
+
+
+### Prompt 11
+i have a static bool isFirstRow that is staying as false and not going back to true with each new test, how do I fix it?
+bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
+    if (!DImplementation->sink) {
+        return false;
+    } 
+
+    static bool isFirstRow = true; //help from Chat, use static to make sure that it's not being changed everytime function is called
+    if (!isFirstRow) {
+        DImplementation->sink->Put('\n'); 
+    } else {
+        isFirstRow = false; 
+    }
+
+    bool firstColumn = true;
+
+    for (const std::string& cell : row) {
+        if (!firstColumn) {
+            if (DImplementation->delimeter == '"') { //checking to see if delimeter is " the delimeter interpret it as a comma according to guidelines
+                DImplementation->sink->Put(','); 
+            } else {
+                DImplementation->sink->Put(DImplementation->delimeter);
+            }
+        }
+
+        if (cell.find(DImplementation->delimeter) != std::string::npos || // check that we are still looking for things to be put in double quotes
+            cell.find('"') != std::string::npos || //these are all according to the guidelines on Project2 doc
+            cell.find('\n') != std::string::npos ||
+            DImplementation->quoteall) {
+            DImplementation->sink->Put('"');
+
+            // Replace double quote characters with two double quotes
+            // got this section from ChatGPT (Changes 4 in ReadME)
+            for (char c : cell) {
+                if (c == '"') {
+                    DImplementation->sink->Put('"');
+                    DImplementation->sink->Put('"'); 
+                } else {
+                    DImplementation->sink->Put(c);
+                }
+            }
+
+            DImplementation->sink->Put('"');
+        } else {
+            for (char c : cell) {
+                DImplementation->sink->Put(c);
+            }
+        }
+
+        firstColumn = false;
+    }
+
+    return true;
+
+}
+
+### Response 11
+It seems like the isFirstRow variable is declared as a static variable inside the WriteRow() function. This means that its value persists across multiple function calls and is not reset to true at the beginning of each test case. To fix this, you should reset isFirstRow to true at the start of each test case.
+
+One way to achieve this is to move the isFirstRow variable outside of the function and make it a member variable of the CDSVWriter class. Then, you can reset it to true in the setup phase of each test case. Here's how you can modify your test cases and the CDSVWriter class:
+
+cpp
+Copy code
+class DSVWriterTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Reset isFirstRow to true before each test case
+        CDSVWriter::isFirstRow = true;
+    }
+};
+In your CDSVWriter class, remove the static keyword from the declaration of isFirstRow and declare it as a member variable of the class instead of inside the WriteRow() function:
+
+cpp
+Copy code
+class CDSVWriter {
+private:
+    std::shared_ptr<CDataSink> sink;
+    char delimiter;
+    bool quoteall;
+    bool isFirstRow = true; // Initialize isFirstRow to true as a member variable
+
+public:
+    // Constructor, member functions, etc.
+};
+By doing this, isFirstRow will be reset to true at the beginning of each test case, ensuring that it behaves as expected and is not influenced by previous test cases.
+
+### Changes 11
+I changed my DSVWriter.cpp from having static bool isFirstRow in the WriteRow function to having bool firstRow initialized in the class.
