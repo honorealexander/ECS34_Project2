@@ -46,5 +46,13 @@ TEST(XMLWriter, WriteTwoEntities) {
     ASSERT_EQ(sink->String(), expectedOutput);
 }
 
-
-
+TEST(XMLWriter, WriteEmptyEntity) {
+    std::shared_ptr<CStringDataSink> sink = std::make_shared<CStringDataSink>();
+    CXMLWriter xmlWriter(sink);
+    SXMLEntity emptyEntity;
+    emptyEntity.DType = SXMLEntity::EType::StartElement;
+    emptyEntity.DNameData = "";
+    bool success = xmlWriter.WriteEntity(emptyEntity);
+    ASSERT_TRUE(success);
+    ASSERT_EQ(sink->String(), "<>");
+}

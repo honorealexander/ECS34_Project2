@@ -75,3 +75,35 @@ TEST(DSVWriter, WriteRow4) {
     EXPECT_TRUE(writer.WriteRow(input2));
     EXPECT_EQ(sink3->String(), "This*h@s\na*spec!al");
 }
+
+TEST(DSVReader, ReadMultipleRowsDifferentDelimiters) {
+    std::shared_ptr<CStringDataSource> source = std::make_shared<CStringDataSource>("Hey,there\nHello|world\nHow|are|you");
+    CDSVReader reader1(source, ',');
+    CDSVReader reader2(source, '|');
+
+    std::vector<std::string> expected1 = {"Hey", "there"};
+    std::vector<std::string> expected2 = {"Hello", "world"};
+    std::vector<std::string> expected3 = {"How", "are", "you"};
+
+    std::vector<std::string> row1, row2, row3;
+
+    EXPECT_TRUE(reader1.ReadRow(row1));
+    EXPECT_TRUE(reader2.ReadRow(row2));
+    EXPECT_TRUE(reader2.ReadRow(row3));
+}
+
+TEST(DSVWriter, WriteRowWithEmptyColumns) {
+    std::shared_ptr<CStringDataSink> sink = std::make_shared<CStringDataSink>();
+    CDSVWriter writer(sink, ',');
+
+    std::vector<std::string> input1 = {"Hey", "", "there"};
+    std::vector<std::string> input2 = {"Hello", "", "world"};
+    std::vector<std::string> input3 = {"How", "are", "", "you"};
+
+    EXPECT_TRUE(writer.WriteRow(input1));
+    EXPECT_TRUE(writer.WriteRow(input2));
+    EXPECT_TRUE(writer.WriteRow(input3));
+
+    EXPECT_EQ(sink->String(), "Hey,,there\nHello,,world\nHow,are,,you");
+}
+
