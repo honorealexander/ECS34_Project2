@@ -19,21 +19,23 @@ CDSVWriter::CDSVWriter(std::shared_ptr<CDataSink> sink, char delimeter, bool quo
 CDSVWriter::~CDSVWriter() = default;
 
 bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
-    if (!DImplementation->sink) return false; // Check if sink is valid
+    if (!DImplementation->sink) {
+        return false; // Check if sink is valid
+    } 
 
-    bool firstColumn = true; // Flag to track the first column in the row
-
-    bool isFirstRow = true; // Flag to track if it's the first row
+    static bool isFirstRow = true; // Flag to track if it's the first row
     if (!isFirstRow) {
         DImplementation->sink->Put('\n'); // Prepend newline if not the first row
     } else {
         isFirstRow = false; // Update flag for subsequent rows
     }
 
+    bool firstColumn = true; // Flag to track the first column in the row
+
     for (const std::string& cell : row) {
         if (!firstColumn) {
             if (DImplementation->delimeter == '"') {
-                // If delimeter is a double quote, interpret it as a comma
+                // If delimiter is a double quote, interpret it as a comma
                 DImplementation->sink->Put(',');
             } else {
                 DImplementation->sink->Put(DImplementation->delimeter);
@@ -44,13 +46,17 @@ bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
             cell.find(DImplementation->delimeter) != std::string::npos ||
             cell.find('"') != std::string::npos ||
             cell.find('\n') != std::string::npos) {
-            // Quote the value if it contains the delimeter, double quote, or newline
+            // Quote the value if it contains the delimiter, double quote, or newline
             DImplementation->sink->Put('"');
 
             // Replace double quote characters with two double quotes
             for (char c : cell) {
-                if (c == '"') DImplementation->sink->Put('"');
-                DImplementation->sink->Put(c);
+                if (c == '"') {
+                    DImplementation->sink->Put('"');
+                    DImplementation->sink->Put('"'); // Replace with two double quotes
+                } else {
+                    DImplementation->sink->Put(c);
+                }
             }
 
             DImplementation->sink->Put('"');
@@ -65,6 +71,7 @@ bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
     }
 
     return true;
+
 }
 
 

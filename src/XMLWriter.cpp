@@ -10,7 +10,6 @@ struct CXMLWriter::SImplementation {
     SImplementation(std::shared_ptr<CDataSink> sink) : sink(sink) {
         parser = XML_ParserCreate(NULL);
         XML_SetUserData(parser, this);
-        // Set up other XML parsing configurations as needed
     }
 
     ~SImplementation() {
@@ -26,23 +25,23 @@ struct CXMLWriter::SImplementation {
     }
 
     bool WriteEntity(const SXMLEntity& entity) {
-        std::vector<char> startTag(entity.DNameData.begin(), entity.DNameData.end());
-        std::vector<char> endTag(entity.DNameData.begin(), entity.DNameData.end());
-        std::vector<char> cdata(entity.DNameData.begin(), entity.DNameData.end());
+        std::string startTag = "<" + entity.DNameData + ">";
+        std::string endTag = "</" + entity.DNameData + ">";
+        std::string cdata = entity.DNameData;
 
         switch (entity.DType) {
             case SXMLEntity::EType::StartElement:
-                if (!sink->Write(startTag)) {
+                if (!sink->Write(std::vector<char>(startTag.begin(), startTag.end()))) {
                     return false;
                 }
                 break;
             case SXMLEntity::EType::EndElement:
-                if (!sink->Write(endTag)) {
+                if (!sink->Write(std::vector<char>(endTag.begin(), endTag.end()))) {
                     return false;
                 }
                 break;
             case SXMLEntity::EType::CharData:
-                if (!sink->Write(cdata)) {
+                if (!sink->Write(std::vector<char>(cdata.begin(), cdata.end()))) {
                     return false;
                 }
                 break;
@@ -52,6 +51,7 @@ struct CXMLWriter::SImplementation {
 
         return true;
     }
+
 };
 
 CXMLWriter::CXMLWriter(std::shared_ptr<CDataSink> sink) {
