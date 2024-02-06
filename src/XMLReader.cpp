@@ -19,11 +19,19 @@ struct CXMLReader::SImplementation{
     }
 
     void EndElementHandler(const std::string &name){
-        
+        SXMLEntity TempEntity;
+        TempEntity.DNameData = name;
+        TempEntity.DType = SXMLEntity::EType::EndElement;
+        DEntityQueue.push(TempEntity);
+        //no need for loop here because its just one element
     }
     
     void CharacterDataHandler(const std::string &data){
-        
+        SXMLEntity TempEntity;
+        TempEntity.DNameData = data;
+        TempEntity.DType = SXMLEntity::EType::CharData;
+        DEntityQueue.push(TempEntity);
+        //similair doesnt need a loop
     }
 
     static void StartElementHandlerCallback(void *context, const XML_Char *name, const XML_Char **atts){
@@ -62,7 +70,7 @@ struct CXMLReader::SImplementation{
     };
 
     bool End() const{
-        return true;
+        return DEntityQueue.empty();
     };
 
     bool ReadEntity(SXMLEntity &entity, bool skipcdata){
