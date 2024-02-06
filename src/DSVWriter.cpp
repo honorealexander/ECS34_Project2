@@ -5,6 +5,7 @@ struct CDSVWriter::SImplementation {
     std::shared_ptr<CDataSink> sink;
     char delimeter;
     bool quoteall;
+    bool firstRow = true;
 
     SImplementation(std::shared_ptr<CDataSink> sink, char delimeter, bool quoteall)
         : sink(sink), delimeter(delimeter), quoteall(quoteall) {}
@@ -23,11 +24,10 @@ bool CDSVWriter::WriteRow(const std::vector<std::string>& row) {
         return false;
     } 
 
-    static bool isFirstRow = true; //help from Chat, use static to make sure that it's not being changed everytime function is called
-    if (!isFirstRow) {
+    if (!DImplementation->firstRow) {
         DImplementation->sink->Put('\n'); 
     } else {
-        isFirstRow = false; 
+        DImplementation->firstRow = false; 
     }
 
     bool firstColumn = true;
